@@ -177,7 +177,8 @@ nfct_timeout_attr_set(struct nfct_timeout *t, uint32_t type, const void *data)
 {
 	switch(type) {
 	case NFCT_TIMEOUT_ATTR_NAME:
-		strncpy(t->name, data, 32);
+		strncpy(t->name, data, sizeof(t->name));
+		t->name[sizeof(t->name)-1] = '\0';
 		break;
 	case NFCT_TIMEOUT_ATTR_L3PROTO:
 		t->l3num = *((uint16_t *) data);
