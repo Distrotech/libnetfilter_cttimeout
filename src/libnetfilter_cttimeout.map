@@ -8,6 +8,7 @@ global:
   nfct_timeout_attr_unset;
   nfct_timeout_policy_attr_set_u32;
   nfct_timeout_policy_unset;
+  nfct_timeout_policy_attr_to_name;
   nfct_timeout_nlmsg_build_hdr;
   nfct_timeout_nlmsg_build_payload;
   nfct_timeout_nlmsg_parse_payload;

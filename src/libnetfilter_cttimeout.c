@@ -282,6 +282,23 @@ void nfct_timeout_policy_attr_unset(struct nfct_timeout *t, uint32_t type)
 }
 EXPORT_SYMBOL(nfct_timeout_policy_attr_unset);
 
+const char *nfct_timeout_policy_attr_to_name(uint8_t l4proto, uint32_t state)
+{
+	if (timeout_protocol[l4proto].state_to_name == NULL) {
+		printf("no array state name\n");
+		return NULL;
+	}
+
+	if (timeout_protocol[l4proto].state_to_name[state] == NULL) {
+		printf("state %d does not exists\n", state);
+		return NULL;
+	}
+
+	return timeout_protocol[l4proto].state_to_name[state];
+}
+EXPORT_SYMBOL(nfct_timeout_policy_attr_to_name);
+
+
 /**
  * nfct_timeout_snprintf - print conntrack timeout object into one buffer
  * \param buf: pointer to buffer that is used to print the object

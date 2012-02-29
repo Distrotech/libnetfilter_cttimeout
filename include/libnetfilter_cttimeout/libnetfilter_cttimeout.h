@@ -96,6 +96,7 @@ int nfct_timeout_attr_set(struct nfct_timeout *t, uint32_t type, const void *dat
 int nfct_timeout_attr_set_u8(struct nfct_timeout *t, uint32_t type, uint8_t data);
 int nfct_timeout_attr_set_u16(struct nfct_timeout *t, uint32_t type, uint16_t data);
 void nfct_timeout_attr_unset(struct nfct_timeout *t, uint32_t type);
+const char *nfct_timeout_policy_attr_to_name(uint8_t l4proto, uint32_t state);
 
 int nfct_timeout_policy_attr_set_u32(struct nfct_timeout *, uint32_t type, uint32_t data);
 void nfct_timeout_policy_attr_unset(struct nfct_timeout *t, uint32_t type);
