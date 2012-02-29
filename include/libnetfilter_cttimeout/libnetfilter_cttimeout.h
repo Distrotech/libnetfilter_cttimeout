@@ -5,6 +5,10 @@
 #include <sys/types.h>
 #include <linux/netfilter/nfnetlink_conntrack.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct nfct_timeout;
 
 struct nfct_timeout *nfct_timeout_alloc(void);
@@ -104,4 +108,8 @@ int nfct_timeout_nlmsg_parse_payload(const struct nlmsghdr *nlh, struct nfct_tim
 
 int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *, unsigned int flags);
 
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
+
+#endif /* _LIBNETFILTER_CTTIMEOUT_H_ */
