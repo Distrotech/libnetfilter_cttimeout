@@ -21,7 +21,7 @@
 
 #include <libnetfilter_cttimeout/libnetfilter_cttimeout.h>
 
-static char *tcp_state_to_name[] = {
+static const char *const tcp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_TCP_SYN_SENT]	= "SYN_SENT",
 	[NFCT_TIMEOUT_ATTR_TCP_SYN_RECV]	= "SYN_RECV",
 	[NFCT_TIMEOUT_ATTR_TCP_ESTABLISHED]	= "ESTABLISHED",
@@ -35,16 +35,16 @@ static char *tcp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_TCP_UNACK]		= "UNACKNOWLEDGED",
 };
 
-static char *generic_state_to_name[] = {
+static const char *const generic_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_GENERIC]		= "TIMEOUT",
 };
 
-static char *udp_state_to_name[] = {
+static const char *const udp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_UDP_UNREPLIED]	= "UNREPLIED",
 	[NFCT_TIMEOUT_ATTR_UDP_REPLIED]		= "REPLIED",
 };
 
-static char *sctp_state_to_name[] = {
+static const char *const sctp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_SCTP_CLOSED]			= "CLOSED",
 	[NFCT_TIMEOUT_ATTR_SCTP_COOKIE_WAIT]		= "COOKIE_WAIT",
 	[NFCT_TIMEOUT_ATTR_SCTP_COOKIE_ECHOED]		= "COOKIE_ECHOED",
@@ -54,7 +54,7 @@ static char *sctp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_SCTP_SHUTDOWN_ACK_SENT]	= "SHUTDOWN_ACK_SENT",
 };
 
-static char *dccp_state_to_name[] = {
+static const char *const dccp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_DCCP_REQUEST]	= "REQUEST",
 	[NFCT_TIMEOUT_ATTR_DCCP_RESPOND]	= "RESPOND",
 	[NFCT_TIMEOUT_ATTR_DCCP_PARTOPEN]	= "PARTOPEN",
@@ -64,14 +64,14 @@ static char *dccp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_DCCP_TIMEWAIT]	= "TIMEWAIT",
 };
 
-static char *icmp_state_to_name[] = {
+static const char *const icmp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_ICMP]		= "TIMEOUT",
 };
 
 static struct {
 	uint32_t nlattr_max;
 	uint32_t attr_max;
-	char **state_to_name;
+	const char *const *state_to_name;
 } timeout_protocol[IPPROTO_MAX] = {
 	[IPPROTO_ICMP]	= {
 		.nlattr_max	= __CTA_TIMEOUT_ICMP_MAX,
