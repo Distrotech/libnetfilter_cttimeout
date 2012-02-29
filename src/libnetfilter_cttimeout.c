@@ -11,6 +11,7 @@
 
 #include <time.h>
 #include <endian.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -21,7 +22,7 @@
 
 #include <libnetfilter_cttimeout/libnetfilter_cttimeout.h>
 
-static char *tcp_state_to_name[] = {
+static const char *const tcp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_TCP_SYN_SENT]	= "SYN_SENT",
 	[NFCT_TIMEOUT_ATTR_TCP_SYN_RECV]	= "SYN_RECV",
 	[NFCT_TIMEOUT_ATTR_TCP_ESTABLISHED]	= "ESTABLISHED",
@@ -35,16 +36,16 @@ static char *tcp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_TCP_UNACK]		= "UNACKNOWLEDGED",
 };
 
-static char *generic_state_to_name[] = {
+static const char *const generic_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_GENERIC]		= "TIMEOUT",
 };
 
-static char *udp_state_to_name[] = {
+static const char *const udp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_UDP_UNREPLIED]	= "UNREPLIED",
 	[NFCT_TIMEOUT_ATTR_UDP_REPLIED]		= "REPLIED",
 };
 
-static char *sctp_state_to_name[] = {
+static const char *const sctp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_SCTP_CLOSED]			= "CLOSED",
 	[NFCT_TIMEOUT_ATTR_SCTP_COOKIE_WAIT]		= "COOKIE_WAIT",
 	[NFCT_TIMEOUT_ATTR_SCTP_COOKIE_ECHOED]		= "COOKIE_ECHOED",
@@ -54,7 +55,7 @@ static char *sctp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_SCTP_SHUTDOWN_ACK_SENT]	= "SHUTDOWN_ACK_SENT",
 };
 
-static char *dccp_state_to_name[] = {
+static const char *const dccp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_DCCP_REQUEST]	= "REQUEST",
 	[NFCT_TIMEOUT_ATTR_DCCP_RESPOND]	= "RESPOND",
 	[NFCT_TIMEOUT_ATTR_DCCP_PARTOPEN]	= "PARTOPEN",
@@ -64,14 +65,14 @@ static char *dccp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_DCCP_TIMEWAIT]	= "TIMEWAIT",
 };
 
-static char *icmp_state_to_name[] = {
+static const char *const icmp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_ICMP]		= "TIMEOUT",
 };
 
 static struct {
 	uint32_t nlattr_max;
 	uint32_t attr_max;
-	char **state_to_name;
+	const char *const *state_to_name;
 } timeout_protocol[IPPROTO_MAX] = {
 	[IPPROTO_ICMP]	= {
 		.nlattr_max	= __CTA_TIMEOUT_ICMP_MAX,
@@ -176,7 +177,8 @@ nfct_timeout_attr_set(struct nfct_timeout *t, uint32_t type, const void *data)
 {
 	switch(type) {
 	case NFCT_TIMEOUT_ATTR_NAME:
-		strncpy(t->name, data, 32);
+		strncpy(t->name, data, sizeof(t->name));
+		t->name[sizeof(t->name)-1] = '\0';
 		break;
 	case NFCT_TIMEOUT_ATTR_L3PROTO:
 		t->l3num = *((uint16_t *) data);
@@ -290,7 +292,7 @@ EXPORT_SYMBOL(nfct_timeout_policy_attr_unset);
  * This function returns -1 in case that some mandatory attributes are
  * missing. On sucess, it returns 0.
  */
-int nfct_timeout_snprintf(char *buf, size_t size, struct nfct_timeout *t,
+int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *t,
 			  unsigned int flags)
 {
 	int ret = 0;
@@ -399,7 +401,8 @@ EXPORT_SYMBOL(nfct_timeout_nlmsg_build_hdr);
  * \param t: pointer to a conntrack timeout object
  */
 void
-nfct_timeout_nlmsg_build_payload(struct nlmsghdr *nlh, struct nfct_timeout *t)
+nfct_timeout_nlmsg_build_payload(struct nlmsghdr *nlh,
+				 const struct nfct_timeout *t)
 {
 	int i;
 	struct nlattr *nest;
@@ -432,7 +435,7 @@ static int
 timeout_nlmsg_parse_attr_cb(const struct nlattr *attr, void *data)
 {
 	const struct nlattr **tb = data;
-	int type = mnl_attr_get_type(attr);
+	uint16_t type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_TIMEOUT_MAX) < 0)
 		return MNL_CB_OK;
@@ -468,7 +471,7 @@ timeout_nlmsg_parse_attr_cb(const struct nlattr *attr, void *data)
 }
 
 struct _container_policy_cb {
-	int nlattr_max;
+	unsigned int nlattr_max;
 	void *tb;
 };
 
@@ -477,7 +480,7 @@ parse_timeout_attr_policy_cb(const struct nlattr *attr, void *data)
 {
 	struct _container_policy_cb *data_cb = data;
         const struct nlattr **tb = data_cb->tb;
-        int type = mnl_attr_get_type(attr);
+	uint16_t type = mnl_attr_get_type(attr);
 
         if (mnl_attr_type_valid(attr, data_cb->nlattr_max) < 0)
                 return MNL_CB_OK;
@@ -495,13 +498,13 @@ parse_timeout_attr_policy_cb(const struct nlattr *attr, void *data)
 static void
 timeout_parse_attr_data(struct nfct_timeout *t, const struct nlattr *nest)
 {
-	int nlattr_max = timeout_protocol[t->l4num].nlattr_max;
+	unsigned int nlattr_max = timeout_protocol[t->l4num].nlattr_max;
 	struct nlattr *tb[nlattr_max];
 	struct _container_policy_cb cnt = {
 		.nlattr_max = nlattr_max,
 		.tb = tb,
 	};
-	int i;
+	unsigned int i;
 
 	memset(tb, 0, sizeof(struct nlattr *) * nlattr_max);
 
