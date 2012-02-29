@@ -1,6 +1,7 @@
 #ifndef _LIBNETFILTER_CTTIMEOUT_H_
 #define _LIBNETFILTER_CTTIMEOUT_H_
 
+#include <stdint.h>
 #include <sys/types.h>
 #include <linux/netfilter/nfnetlink_conntrack.h>
 

@@ -11,6 +11,7 @@
 
 #include <time.h>
 #include <endian.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <netinet/in.h>
@@ -432,7 +433,7 @@ static int
 timeout_nlmsg_parse_attr_cb(const struct nlattr *attr, void *data)
 {
 	const struct nlattr **tb = data;
-	int type = mnl_attr_get_type(attr);
+	uint16_t type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, CTA_TIMEOUT_MAX) < 0)
 		return MNL_CB_OK;
@@ -468,7 +469,7 @@ timeout_nlmsg_parse_attr_cb(const struct nlattr *attr, void *data)
 }
 
 struct _container_policy_cb {
-	int nlattr_max;
+	unsigned int nlattr_max;
 	void *tb;
 };
 
@@ -477,7 +478,7 @@ parse_timeout_attr_policy_cb(const struct nlattr *attr, void *data)
 {
 	struct _container_policy_cb *data_cb = data;
         const struct nlattr **tb = data_cb->tb;
-        int type = mnl_attr_get_type(attr);
+	uint16_t type = mnl_attr_get_type(attr);
 
         if (mnl_attr_type_valid(attr, data_cb->nlattr_max) < 0)
                 return MNL_CB_OK;
@@ -495,13 +496,13 @@ parse_timeout_attr_policy_cb(const struct nlattr *attr, void *data)
 static void
 timeout_parse_attr_data(struct nfct_timeout *t, const struct nlattr *nest)
 {
-	int nlattr_max = timeout_protocol[t->l4num].nlattr_max;
+	unsigned int nlattr_max = timeout_protocol[t->l4num].nlattr_max;
 	struct nlattr *tb[nlattr_max];
 	struct _container_policy_cb cnt = {
 		.nlattr_max = nlattr_max,
 		.tb = tb,
 	};
-	int i;
+	unsigned int i;
 
 	memset(tb, 0, sizeof(struct nlattr *) * nlattr_max);
 
