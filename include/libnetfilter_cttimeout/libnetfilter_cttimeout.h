@@ -99,9 +99,9 @@ void nfct_timeout_policy_attr_unset(struct nfct_timeout *t, uint32_t type);
 struct nlmsghdr;
 
 struct nlmsghdr *nfct_timeout_nlmsg_build_hdr(char *buf, uint8_t cmd, uint16_t flags, uint32_t seq);
-void nfct_timeout_nlmsg_build_payload(struct nlmsghdr *, struct nfct_timeout *);
+void nfct_timeout_nlmsg_build_payload(struct nlmsghdr *, const struct nfct_timeout *);
 int nfct_timeout_nlmsg_parse_payload(const struct nlmsghdr *nlh, struct nfct_timeout *);
 
-int nfct_timeout_snprintf(char *buf, size_t size, struct nfct_timeout *, unsigned int flags);
+int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *, unsigned int flags);
 
 #endif

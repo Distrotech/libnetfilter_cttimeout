@@ -292,7 +292,7 @@ EXPORT_SYMBOL(nfct_timeout_policy_attr_unset);
  * This function returns -1 in case that some mandatory attributes are
  * missing. On sucess, it returns 0.
  */
-int nfct_timeout_snprintf(char *buf, size_t size, struct nfct_timeout *t,
+int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *t,
 			  unsigned int flags)
 {
 	int ret = 0;
@@ -401,7 +401,8 @@ EXPORT_SYMBOL(nfct_timeout_nlmsg_build_hdr);
  * \param t: pointer to a conntrack timeout object
  */
 void
-nfct_timeout_nlmsg_build_payload(struct nlmsghdr *nlh, struct nfct_timeout *t)
+nfct_timeout_nlmsg_build_payload(struct nlmsghdr *nlh,
+				 const struct nfct_timeout *t)
 {
 	int i;
 	struct nlattr *nest;
