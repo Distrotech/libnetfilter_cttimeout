@@ -69,6 +69,10 @@ static const char *const icmp_state_to_name[] = {
 	[NFCT_TIMEOUT_ATTR_ICMP]		= "TIMEOUT",
 };
 
+static const char *const icmpv6_state_to_name[] = {
+	[NFCT_TIMEOUT_ATTR_ICMPV6]		= "TIMEOUT",
+};
+
 static struct {
 	uint32_t nlattr_max;
 	uint32_t attr_max;
@@ -108,6 +112,11 @@ static struct {
 		.nlattr_max	= __CTA_TIMEOUT_UDPLITE_MAX,
 		.attr_max	= NFCT_TIMEOUT_ATTR_UDPLITE_MAX,
 		.state_to_name	= udp_state_to_name,
+	},
+	[IPPROTO_ICMPV6]	= {
+		.nlattr_max	= __CTA_TIMEOUT_ICMPV6_MAX,
+		.attr_max	= NFCT_TIMEOUT_ATTR_ICMPV6_MAX,
+		.state_to_name	= icmpv6_state_to_name,
 	},
 	/* add your new supported protocol tracker here. */
 	[IPPROTO_RAW]	= {
