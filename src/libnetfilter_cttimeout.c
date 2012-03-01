@@ -433,7 +433,7 @@ nfct_timeout_nlmsg_build_payload(struct nlmsghdr *nlh,
 	if (t->attrset & (1 << NFCT_TIMEOUT_ATTR_L4PROTO))
 		mnl_attr_put_u8(nlh, CTA_TIMEOUT_L4PROTO, t->l4num);
 
-	if (t->attrset & (1 << NFCT_TIMEOUT_ATTR_POLICY)) {
+	if (t->attrset & (1 << NFCT_TIMEOUT_ATTR_POLICY) && t->polset) {
 		nest = mnl_attr_nest_start(nlh, CTA_TIMEOUT_DATA);
 
 		for (i=0; i<timeout_protocol[t->l4num].attr_max; i++) {
