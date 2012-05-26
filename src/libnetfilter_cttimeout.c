@@ -1,11 +1,12 @@
 /*
  * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
- * (C) 2012 by Vyatta Inc. <http://www.vyatta.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * This code has been sponsored by Vyatta Inc. <http://www.vyatta.com>
  */
 #include "internal.h"
 
@@ -138,6 +139,41 @@ struct nfct_timeout {
 };
 
 /**
+ * \mainpage
+ *
+ * libnetfilter_cttimeout is the userspace library that provides a programming
+ * interface (API) to the in-kernel cttimeout infrastructure. This
+ * infrastructure allows you to define fine-grain connection tracking timeout
+ * policies that can be attached to traffic flows via iptables CT target.
+ * Before the existence of this infrastructure, you could only set global
+ * timeout policies per protocol. This library is currently used by the nfct
+ * utility that is part of the conntrack-tools.
+ *
+ * libnetfilter_cttimeout homepage is:
+ *      http://netfilter.org/projects/libnetfilter_cttimeout/
+ *
+ * \section Dependencies
+ * libnetfilter_cttimeout requires libmnl and a kernel that includes the
+ * nfnetlink_cttimeout subsystem (i.e. 3.4.0 or later).
+ *
+ * \section Main Features
+ *  - listing/retrieving entries from the timeout policy table.
+ *  - inserting/modifying/deleting entries from the timeout policy table.
+ *
+ * \section Git Tree
+ * The current development version of libnetfilter_cttimeout can be accessed at
+ * https://git.netfilter.org/cgi-bin/gitweb.cgi?p=libnetfilter_cttimeout.git
+ *
+ * \section Privileges
+ * You need the CAP_NET_ADMIN capability in order to allow your application
+ * to receive events from and to send commands to kernel-space, excepting
+ * the timeout policy table dumping operation.
+ *
+ * \section Authors
+ * libnetfilter_conntrack has been written by Pablo Neira Ayuso.
+ */
+
+/**
  * \defgroup nfcttimeout Accounting object handling
  * @{
  */
@@ -165,7 +201,7 @@ EXPORT_SYMBOL(nfct_timeout_alloc);
 
 /**
  * nfct_timeout_free - release one conntrack timeout object
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  */
 void nfct_timeout_free(struct nfct_timeout *t)
 {
@@ -177,7 +213,7 @@ EXPORT_SYMBOL(nfct_timeout_free);
 
 /**
  * nfct_timeout_attr_set - set one attribute of the conntrack timeout object
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  * \param type attribute type you want to set
  * \param data pointer to data that will be used to set this attribute
  */
@@ -204,7 +240,7 @@ EXPORT_SYMBOL(nfct_timeout_attr_set);
 
 /**
  * nfct_timeout_attr_set_u8 - set one attribute of the conntrack timeout object
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  * \param type attribute type you want to set
  * \param data pointer to data that will be used to set this attribute
  */
@@ -217,7 +253,7 @@ EXPORT_SYMBOL(nfct_timeout_attr_set_u8);
 
 /**
  * nfct_timeout_attr_set_u16 - set one attribute of the conntrack timeout object
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  * \param type attribute type you want to set
  * \param data pointer to data that will be used to set this attribute
  */
@@ -228,6 +264,11 @@ nfct_timeout_attr_set_u16(struct nfct_timeout *t, uint32_t type, uint16_t data)
 }
 EXPORT_SYMBOL(nfct_timeout_attr_set_u16);
 
+/**
+ * nfct_timeout_attr_unset - unset one attribute of the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
+ * \param type attribute type you want to set
+ */
 void nfct_timeout_attr_unset(struct nfct_timeout *t, uint32_t type)
 {
 	t->attrset &= ~(1 << type);
@@ -236,7 +277,7 @@ EXPORT_SYMBOL(nfct_timeout_attr_unset);
 
 /**
  * nfct_timeout_policy_attr_set_u32 - set one attribute of the policy
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  * \param type attribute type you want to set
  * \param data data that will be used to set this attribute
  */
@@ -282,7 +323,7 @@ EXPORT_SYMBOL(nfct_timeout_policy_attr_set_u32);
 
 /**
  * nfct_timeout_policy_attr_unset - unset one attribute of the policy
- * \param nfct_timeout pointer to the conntrack timeout object
+ * \param t pointer to the conntrack timeout object
  * \param type attribute type you want to set
  */
 void nfct_timeout_policy_attr_unset(struct nfct_timeout *t, uint32_t type)
@@ -291,6 +332,14 @@ void nfct_timeout_policy_attr_unset(struct nfct_timeout *t, uint32_t type)
 }
 EXPORT_SYMBOL(nfct_timeout_policy_attr_unset);
 
+/**
+ * nfct_timeout_policy_attr_to_name - get state name from protocol state number
+ * \param l4proto protocol, ie. IPPROTO_*
+ * \param state state number that you want to get the state name
+ *
+ * This function returns NULL if unsupported protocol or state number is passed.
+ * Otherwise, a pointer to valid string is returned.
+ */
 const char *nfct_timeout_policy_attr_to_name(uint8_t l4proto, uint32_t state)
 {
 	if (timeout_protocol[l4proto].state_to_name == NULL) {
@@ -547,7 +596,7 @@ timeout_parse_attr_data(struct nfct_timeout *t, const struct nlattr *nest)
 /**
  * nfct_timeout_nlmsg_parse_payload - set timeout object attributes from message
  * \param nlh: netlink message that you want to use to add the payload.
- * \param nfct_timeout: pointer to a conntrack timeout object
+ * \param t: pointer to a conntrack timeout object
  *
  * This function returns -1 in case that some mandatory attributes are
  * missing. On sucess, it returns 0.
