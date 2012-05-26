@@ -1,1 +1,1 @@
-SUBDIR = netfilter
+SUBDIRS = netfilter
