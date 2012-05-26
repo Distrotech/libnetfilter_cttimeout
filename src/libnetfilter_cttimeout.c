@@ -356,19 +356,10 @@ const char *nfct_timeout_policy_attr_to_name(uint8_t l4proto, uint32_t state)
 }
 EXPORT_SYMBOL(nfct_timeout_policy_attr_to_name);
 
-
-/**
- * nfct_timeout_snprintf - print conntrack timeout object into one buffer
- * \param buf: pointer to buffer that is used to print the object
- * \param size: size of the buffer (or remaining room in it).
- * \param nfct_timeout: pointer to a valid conntrack timeout object.
- * \param flags: output flags (CTA_TIMEOUT_SNPRINTF_F_FULL).
- *
- * This function returns -1 in case that some mandatory attributes are
- * missing. On sucess, it returns 0.
- */
-int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *t,
-			  unsigned int flags)
+static int
+nfct_timeout_snprintf_default(char *buf, size_t size,
+			      const struct nfct_timeout *t,
+			      unsigned int flags)
 {
 	int ret = 0;
 	unsigned int offset = 0;
@@ -423,6 +414,34 @@ int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *t,
 	size -= ret;
 
 	buf[offset]='\0';
+
+	return ret;
+}
+
+/**
+ * nfct_timeout_snprintf - print conntrack timeout object into one buffer
+ * \param buf: pointer to buffer that is used to print the object
+ * \param size: size of the buffer (or remaining room in it).
+ * \param t: pointer to a valid conntrack timeout object.
+ * \param type: output type (see NFCT_TIMEOUT_O_*)
+ * \param flags: output flags (always set this to zero).
+ *
+ * This function returns -1 in case that some mandatory attributes are
+ * missing. On sucess, it returns 0.
+ */
+int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *t,
+			  unsigned int type, unsigned int flags)
+{
+	int ret = 0;
+
+	switch(type) {
+	case NFCT_TIMEOUT_O_DEFAULT:
+		ret = nfct_timeout_snprintf_default(buf, size, t, flags);
+		break;
+	/* add your new output here. */
+	default:
+		break;
+	}
 
 	return ret;
 }

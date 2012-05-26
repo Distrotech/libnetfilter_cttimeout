@@ -107,7 +107,11 @@ struct nlmsghdr *nfct_timeout_nlmsg_build_hdr(char *buf, uint8_t cmd, uint16_t f
 void nfct_timeout_nlmsg_build_payload(struct nlmsghdr *, const struct nfct_timeout *);
 int nfct_timeout_nlmsg_parse_payload(const struct nlmsghdr *nlh, struct nfct_timeout *);
 
-int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *, unsigned int flags);
+enum {
+	NFCT_TIMEOUT_O_DEFAULT,
+};
+
+int nfct_timeout_snprintf(char *buf, size_t size, const struct nfct_timeout *, unsigned int type, unsigned int flags);
 
 #ifdef __cplusplus
 } /* extern "C" */
