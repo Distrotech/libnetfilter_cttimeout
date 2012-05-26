@@ -174,7 +174,7 @@ struct nfct_timeout {
  */
 
 /**
- * \defgroup nfcttimeout Accounting object handling
+ * \defgroup nfcttimeout Timeout policy object handling
  * @{
  */
 
@@ -355,6 +355,15 @@ const char *nfct_timeout_policy_attr_to_name(uint8_t l4proto, uint32_t state)
 	return timeout_protocol[l4proto].state_to_name[state];
 }
 EXPORT_SYMBOL(nfct_timeout_policy_attr_to_name);
+
+/**
+ * @}
+ */
+
+/**
+ * \defgroup nfcttimeout_output Timeout policy object output
+ * @{
+ */
 
 static int
 nfct_timeout_snprintf_default(char *buf, size_t size,
